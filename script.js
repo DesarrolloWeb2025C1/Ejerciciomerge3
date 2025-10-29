@@ -1,78 +1,184 @@
+// =============================
+// Carrito & Carrusel
+// =============================
 let carrito = [];
 let posicionCarrusel = 0;
 
+// --- Formateo y parsing de precios (es-AR) ---
+const formatoAR = new Intl.NumberFormat('es-AR', {
+  style: 'currency',
+  currency: 'ARS',
+  minimumFractionDigits: 0,
+});
+
+// Acepta: número, string "$3.900", "3.900", "3,900.00",
+// o un nodo del DOM (p.ej. this.previousElementSibling)
+function normalizarPrecio(valor) {
+  // Si es nodo del DOM, tomar el texto
+  if (valor && typeof valor === 'object' && 'textContent' in valor) {
+    valor = valor.textContent;
+  }
+
+  // Si ya es número, usarlo tal cual (pero intentamos corregir el caso 3.900 -> 3900)
+  if (typeof valor === 'number') {
+    // Heurística: si es menor a 100 y tiene 1 o 2 decimales exactos,
+    // es común que provenga de "3.900" (miles) escrito como 3.900 literal.
+    const s = String(valor);
+    const partes = s.split('.');
+    if (valor < 100 && partes.length === 2 && (partes[1].length === 1 || partes[1].length === 2)) {
+      const posibleMiles = Number((valor * 1000).toFixed(0));
+      if (Number.isFinite(posibleMiles)) return posibleMiles;
+    }
+    return valor;
+  }
+
+  // Convertir a string y limpiar
+  let s = String(valor ?? '').trim();
+
+  // Quitar todo lo que no sea dígito, punto, coma o signo
+  s = s.replace(/[^\d,.\-]/g, '');
+
+  // Casos:
+  // 1) es-AR "12.345,67" -> "12345.67"
+  if (s.includes('.') && s.includes(',')) {
+    s = s.replace(/\./g, '').replace(',', '.');
+  }
+  // 2) "12.345" (punto como miles, sin decimales) -> "12345"
+  else if (/\.\d{3}(?:\D|$)/.test(s)) {
+    s = s.replace(/\./g, '');
+  }
+  // 3) "12345,67" (coma decimal) -> "12345.67"
+  else if (/,\d{1,2}$/.test(s)) {
+    s = s.replace(/\./g, '').replace(',', '.');
+  }
+  // 4) Quitar puntos sueltos restantes
+  else {
+    s = s.replace(/\./g, '');
+  }
+
+  const n = Number(s);
+  return Number.isFinite(n) ? n : 0;
+}
+
+// =============================
+// Nav & Modales
+// =============================
 function toggleMenu() {
-    document.getElementById('navLinks').classList.toggle('active');
+  document.getElementById('navLinks').classList.toggle('active');
 }
 
 function toggleCarrito() {
-    const modal = document.getElementById('carritoModal');
-    modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+  const modal = document.getElementById('carritoModal');
+  modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
 }
 
+// =============================
+// Carrito
+// =============================
 function agregarAlCarrito(nombre, precio) {
-    carrito.push({ id: Date.now(), nombre, precio });
-    actualizarCarrito();
-    const notification = document.createElement('div');
-    notification.style.cssText = 'position: fixed; top:80px; right:20px; background:#4FC3F7; color:white; padding:1rem 2rem; border-radius:5px; z-index:3000;';
-    notification.textContent = '✓ Producto agregado al carrito';
-    document.body.appendChild(notification);
-    setTimeout(() => notification.remove(), 2000);
+  const precioNormalizado = normalizarPrecio(precio);
+  carrito.push({ id: Date.now(), nombre, precio: precioNormalizado });
+  actualizarCarrito();
+
+  const notification = document.createElement('div');
+  notification.style.cssText =
+    'position: fixed; top:80px; right:20px; background:#4FC3F7; color:white; padding:1rem 2rem; border-radius:5px; z-index:3000;';
+  notification.textContent = '✓ Producto agregado al carrito';
+  document.body.appendChild(notification);
+  setTimeout(() => notification.remove(), 2000);
 }
 
-function eliminarDelCarrito(id) { carrito = carrito.filter(i => i.id !== id); actualizarCarrito(); }
-function vaciarCarrito() { carrito=[]; actualizarCarrito(); }
-function finalizarCompra() { carrito=[]; actualizarCarrito(); toggleCarrito(); }
+function eliminarDelCarrito(id) {
+  carrito = carrito.filter(i => i.id !== id);
+  actualizarCarrito();
+}
+function vaciarCarrito() {
+  carrito = [];
+  actualizarCarrito();
+}
+function finalizarCompra() {
+  carrito = [];
+  actualizarCarrito();
+  toggleCarrito();
+}
 
 function actualizarCarrito() {
-    const count = document.getElementById('carritoCount');
-    const items = document.getElementById('carritoItems');
-    const total = document.getElementById('carritoTotal');
-    count.textContent = carrito.length;
-    if(carrito.length===0){ items.innerHTML='<p style="text-align:center;color:#999;">El carrito está vacío</p>'; total.textContent='Total: $0.00'; return;}
-    items.innerHTML = carrito.map(item=>`<div class="carrito-item"><div class="carrito-item-info"><strong>${item.nombre}</strong><br><span style="color:#4FC3F7;font-weight:bold;">$${item.precio.toFixed(2)}</span></div><button class="eliminar-item" onclick="eliminarDelCarrito(${item.id})">✖</button></div>`).join('');
-    const totalPrecio = carrito.reduce((sum,i)=>sum+i.precio,0);
-    total.textContent = `Total: $${totalPrecio.toFixed(2)}`;
+  const count = document.getElementById('carritoCount');
+  const items = document.getElementById('carritoItems');
+  const total = document.getElementById('carritoTotal');
+
+  count.textContent = carrito.length;
+
+  if (carrito.length === 0) {
+    items.innerHTML = '<p style="text-align:center;color:#999;">El carrito está vacío</p>';
+    total.textContent = 'Total: ' + formatoAR.format(0);
+    return;
+  }
+
+  items.innerHTML = carrito
+    .map(
+      item => `
+      <div class="carrito-item">
+        <div class="carrito-item-info">
+          <strong>${item.nombre}</strong><br>
+          <span style="color:#4FC3F7;font-weight:bold;">${formatoAR.format(item.precio)}</span>
+        </div>
+        <button class="eliminar-item" onclick="eliminarDelCarrito(${item.id})">✖</button>
+      </div>
+    `
+    )
+    .join('');
+
+  const totalPrecio = carrito.reduce((sum, i) => sum + i.precio, 0);
+  total.textContent = `Total: ${formatoAR.format(totalPrecio)}`;
 }
 
+// =============================
 // Carrusel
-function moverCarrusel(direccion){
-    const carrusel = document.getElementById('carrusel');
-    const items = carrusel.getElementsByClassName('carrusel-item');
-    const itemWidth = items[0].offsetWidth + 24;
-    const visibleItems = Math.floor(carrusel.parentElement.offsetWidth / itemWidth);
-    const maxPosition = items.length - visibleItems;
-    posicionCarrusel += direccion;
-    if(posicionCarrusel<0)posicionCarrusel=0;
-    if(posicionCarrusel>maxPosition)posicionCarrusel=maxPosition;
-    carrusel.style.transform=`translateX(-${posicionCarrusel*itemWidth}px)`;
+// =============================
+function moverCarrusel(direccion) {
+  const carrusel = document.getElementById('carrusel');
+  const items = carrusel.getElementsByClassName('carrusel-item');
+  const itemWidth = items[0].offsetWidth + 24;
+  const visibleItems = Math.floor(carrusel.parentElement.offsetWidth / itemWidth);
+  const maxPosition = items.length - visibleItems;
+  posicionCarrusel += direccion;
+  if (posicionCarrusel < 0) posicionCarrusel = 0;
+  if (posicionCarrusel > maxPosition) posicionCarrusel = maxPosition;
+  carrusel.style.transform = `translateX(-${posicionCarrusel * itemWidth}px)`;
 }
 
-setInterval(()=>{
-    const carrusel=document.getElementById('carrusel');
-    const items=carrusel.getElementsByClassName('carrusel-item');
-    const itemWidth=items[0].offsetWidth+24;
-    const visibleItems=Math.floor(carrusel.parentElement.offsetWidth/itemWidth);
-    const maxPosition=items.length-visibleItems;
-    posicionCarrusel++;
-    if(posicionCarrusel>maxPosition)posicionCarrusel=0;
-    carrusel.style.transform=`translateX(-${posicionCarrusel*itemWidth}px)`;
-},3000);
+setInterval(() => {
+  const carrusel = document.getElementById('carrusel');
+  const items = carrusel.getElementsByClassName('carrusel-item');
+  const itemWidth = items[0].offsetWidth + 24;
+  const visibleItems = Math.floor(carrusel.parentElement.offsetWidth / itemWidth);
+  const maxPosition = items.length - visibleItems;
+  posicionCarrusel++;
+  if (posicionCarrusel > maxPosition) posicionCarrusel = 0;
+  carrusel.style.transform = `translateX(-${posicionCarrusel * itemWidth}px)`;
+}, 3000);
 
+// =============================
 // Cerrar carrito al hacer clic fuera
-window.onclick = function(event) {
-    if(event.target === document.getElementById('carritoModal')){
-        event.target.style.display='none';
-    }
-}
+// =============================
+window.onclick = function (event) {
+  if (event.target === document.getElementById('carritoModal')) {
+    event.target.style.display = 'none';
+  }
+};
 
+// =============================
 // Smooth scroll
-document.querySelectorAll('a[href^="#"]').forEach(anchor=>{
-    anchor.addEventListener('click',function(e){
-        e.preventDefault();
-        const target=document.querySelector(this.getAttribute('href'));
-        if(target){ target.scrollIntoView({behavior:'smooth'});}
-    });
+// =============================
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
 });
 
 actualizarCarrito();
