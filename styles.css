@@ -5,16 +5,28 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     line-height: 1.6;
 }
 
 /* Colores principales  */
 :root {
-    --celeste: #006bc2;
-    --celeste-claro: #006bc2;
-    --blanco: #bcd9ff;
+    --celeste: #D6336C;
+    --celeste-claro:#FAE0E4;
+    --blanco: #321D32;
     --gris: #333;
+}
+
+/* Paleta accesible para el carrito*/
+:root {
+    --cart-bg: #ffffff;           /* fondo del contenido */
+    --cart-text: #111111;         /* texto principal */
+    --cart-header-bg: #7a1430;    /* encabezado oscuro - contraste con texto blanco */
+    --cart-accent: #D6336C;       /* color de acento (marca) */
+    --cart-accent-dark: #6a1026;  /* versión más oscura para contraste */
+    --cart-btn-text: #ffffff;     /* texto en botones primarios */
+    --cart-btn-bg: var(--cart-header-bg);
+    --cart-btn-hover: var(--cart-accent-dark);
 }
 
 /* Header y Navegación */
@@ -84,8 +96,8 @@ nav {
     position: absolute;
     top: 0;
     right: 0;
-    background: #ff4444;
-    color: white;
+    background: #b8a2b8;
+    color: rgb(0, 0, 0);
     border-radius: 50%;
     width: 20px;
     height: 20px;
@@ -294,7 +306,11 @@ h2 {
 /* Sobre Nosotros */
 #sobre-nosotros {
     background: var(--celeste-claro);
-    color: white;
+    color: #000000; /* Color negro para mejor legibilidad */
+}
+
+#sobre-nosotros h2 {
+    color: var(--celeste); /* Mismo color que otros títulos */
 }
 
 #sobre-nosotros p {
@@ -302,6 +318,30 @@ h2 {
     max-width: 800px;
     margin: 0 auto;
     font-size: 1.1rem;
+    color: #000000; /* Color negro para mejor legibilidad de los párrafos */
+}
+
+#sobre-nosotros a {
+    color: #D6336C;
+    text-decoration: underline;
+}
+
+/* Imagen de la sección Sobre Nosotros: centrada y escalada */
+.sobre-img {
+    display: block;
+    margin: 1.5rem auto;
+    width: 70%;
+    max-width: 600px;
+    height: auto;
+    transform: rotate(0deg); /* Cambiar a 90deg / -90deg si la imagen sigue rotada */
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+@media (max-width: 768px) {
+    .sobre-img {
+        width: 90%;
+    }
 }
 
 /* Contacto */
@@ -317,12 +357,12 @@ h2 {
     padding: 2rem;
     border-radius: 10px;
     text-align: center;
-    color: white;
+    color: #333; /* Color oscuro para mejor legibilidad */
 }
 
 .contacto-item h3 {
     margin-bottom: 1rem;
-    color: white;
+    color: #333; /* Color oscuro para mejor legibilidad */
 }
 
 /* Carrito Modal */
@@ -363,12 +403,67 @@ h2 {
 }
 
 .cerrar-carrito:hover {
-    color: #ff4444;
+    color: #6338d8;
 }
 
 .carrito-item {
     display: flex;
     justify-content: space-between;
+.carrito-header h2 {
+    font-size: 1.5rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #ffffff; /* sobre fondo oscuro del header */
+}
+
+.carrito-header .cerrar-carrito {
+    background: transparent;
+    color: #ffffff;
+    font-size: 1.2rem;
+}
+
+.carrito-item .item-nombre {
+    font-weight: 700;
+    color: var(--cart-text); /* negro sobre blanco */
+}
+
+.carrito-item .item-precio {
+    color: var(--cart-accent-dark); /* oscuro para buen contraste */
+    font-weight: 700;
+}
+
+.eliminar-item {
+    background: #ffd9da; /* fondo claro rojo */
+    color: #7a1026; /* texto oscuro para contraste */
+    border: 1px solid rgba(122,16,38,0.12);
+}
+
+.eliminar-item:focus,
+.eliminar-item:hover {
+    background: #ffb6b6;
+    outline: 3px solid rgba(122,20,48,0.14);
+}
+
+.carrito-total {
+    color: var(--cart-accent-dark);
+    font-size: 1.25rem;
+}
+
+.carrito-content .btn.finalizar {
+    background: linear-gradient(180deg, var(--cart-btn-bg), var(--cart-btn-hover));
+    color: var(--cart-btn-text);
+}
+
+.carrito-content .btn.vaciar {
+    background: linear-gradient(180deg, #ff6b61, #e74c3c);
+    color: #ffffff;
+}
+
+.carrito-content .btn:focus {
+    box-shadow: 0 0 0 4px rgba(214,51,108,0.12);
+}
     align-items: center;
     padding: 1rem;
     border-bottom: 1px solid #eee;
@@ -379,8 +474,8 @@ h2 {
 }
 
 .eliminar-item {
-    background: #ff4444;
-    color: white;
+    background: #ff000021;
+    color: rgb(102, 13, 13);
     border: none;
     padding: 0.3rem 0.8rem;
     border-radius: 3px;
@@ -445,5 +540,49 @@ footer {
         width: 35px;
         height: 35px;
         font-size: 1.2rem;
+    }
+}
+
+/* Sección 'Qué proporcionamos' - 3 carteles en fila */
+.proporcionamos-cards {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    align-items: stretch;
+}
+
+.proporcionamos-card {
+    background: #ffd9da; /* fondo claro rojo */
+    border-radius: 8px;
+    padding: 1rem;
+    flex: 1 1 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    text-align: center;
+}
+
+.proporcionamos-card .card-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.proporcionamos-card h3 {
+    color: var(--gris);
+    margin-bottom: 0.5rem;
+}
+
+.proporcionamos-card p {
+    color: #444;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+    .proporcionamos-cards {
+        flex-direction: column;
+    }
+
+    .proporcionamos-card {
+        width: 100%;
     }
 }
