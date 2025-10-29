@@ -255,8 +255,13 @@ h2 {
 
 .card img {
     width: 100%;
-    height: 200px;
-    object-fit: cover;
+    height: 230px; /* Un poco más alto para cuadradas */
+    object-fit: contain; /* Evita recortes y conserva proporciones */
+    background-color: #f8f8f8; /* Fondo neutro para imágenes con transparencia o espacios vacíos */
+    padding: 10px; /* Espacio interno para equilibrar el borde */
+    border-radius: 8px; /* Bordes suaves y uniformes */
+    display: block;
+    margin: 0 auto;
 }
 
 .card-content {
