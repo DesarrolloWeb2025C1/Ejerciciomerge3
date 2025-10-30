@@ -9,6 +9,13 @@ body {
     line-height: 1.6;
 }
 
+#inicio {
+    background-image: url('img-inicio/fondoplantas.jpg');
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-size: 100% auto; /* fuerza que el ancho sea 100% del contenedor */
+    min-height: 100vh;
+  }
 /* Colores principales  */
 :root {
     --celeste: #D6336C;
