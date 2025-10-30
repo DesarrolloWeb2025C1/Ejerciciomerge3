@@ -599,3 +599,15 @@ footer {
         width: 100%;
     }
 }
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+.proporcionamos-card.highlight {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    transform: translateY(-4px);
+    transition: all 0.3s ease;
+    outline: 3px solid rgba(155, 229, 155, 0.25);
+}
