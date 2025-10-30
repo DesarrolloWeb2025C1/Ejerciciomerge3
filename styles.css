@@ -601,22 +601,13 @@ footer {
 }
 
 
-css
-
-/* ...existing code... */
-
-/* Scroll suave al usar enlaces con # */
 html {
     scroll-behavior: smooth;
 }
 
-/* Clase temporal para resaltar el elemento destino */
 .proporcionamos-card.highlight {
     box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     transform: translateY(-4px);
     transition: all 0.3s ease;
     outline: 3px solid rgba(155, 229, 155, 0.25);
 }
-
-/* ...existing code... */
-
