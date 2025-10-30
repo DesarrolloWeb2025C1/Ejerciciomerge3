@@ -25,7 +25,7 @@
                 <!-- Ícono del carrito -->
                 <li class="carrito-icon" onclick="toggleCarrito()" 
                     style="cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                    <img src="img-inicio/carrito.png" 
+                    <img src="img-inicio/carrito2.png" 
                          alt="Carrito de compras" 
                          style="width: 32px; height: 32px; object-fit: contain;">
                     <span class="carrito-count" id="carritoCount" style="font-weight: bold;">0</span>
@@ -41,25 +41,19 @@
     margin: 0;
     padding: 0;
     /* La clave para la cobertura total: */
-    background-image: url('img-inicio/fondo-flores-inicio.jpg');
-    background-size: cover; 
+    background-image: url('img-inicio/fondo3.jpg');
+    background-size: cover cover; 
     background-position: center; 
     background-repeat: no-repeat;
+    
     /* El resto de las propiedades son para el contenido y el color del texto */
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: #ffffff;
+    align-items: flex;
+    text-align: left;
+    color: #ffffff5e;
 ">
-  <!-- Capa suave -->
-  <div style="
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(248, 116, 198, 0.212);
-      z-index: 0;
-  "></div>
 
   <!-- Contenido del hero -->
   <div style="
@@ -72,7 +66,7 @@
           font-size: 3rem;
           margin-bottom: 1rem;
           font-family: 'Arima Madurai', serif;
-      ">Bienvenidos a <span style='color:#9be59b;'>La Tiendita</span></h1>
+      "><span style='color:rgb(0, 0, 0);'>Bienvenidos a</span></span> <span style='color:#3b9133;'>La Tiendita</span></h1>
 
       <p style="
           font-size: 1.3rem;
@@ -80,8 +74,8 @@
           margin-bottom: 2rem;
           font-family: 'Mulish', sans-serif;
       ">
-          Llená tu casa de verde, estilo y vida 🌿 <br>
-          Plantas, macetas y decoración natural para tu hogar.
+         <span style="color:black;">Llená tu casa de verde, estilo y vida 🌿 <br>
+          Plantas, macetas y decoración natural para tu hogar.</span>
       </p>
 
       <a href="#productos" style="
